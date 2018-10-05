@@ -170,8 +170,7 @@ def evaluate(exp, env)
       else
         raise("number of parameters is wrong")
       end
-
-   end
+    end
 
   when "func_def"
     # Function definition.
@@ -192,13 +191,17 @@ def evaluate(exp, env)
 
   # You don't need advices anymore, do you?
   when "ary_new"
-    raise(NotImplementedError) # Problem 6
+    arr = []
+    for subexp in exp.drop(1)
+      arr = arr << evaluate(subexp, env)
+    end
+    arr
 
   when "ary_ref"
-    raise(NotImplementedError) # Problem 6
+    evaluate(exp[1], env)[evaluate(exp[2], env)]
 
   when "ary_assign"
-    raise(NotImplementedError) # Problem 6
+    evaluate(exp[1], env)[evaluate(exp[2], env)] = evaluate(exp[3], env)
 
   when "hash_new"
     raise(NotImplementedError) # Problem 6
