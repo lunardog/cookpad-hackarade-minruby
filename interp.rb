@@ -27,6 +27,14 @@ def evaluate(exp, env)
     evaluate(exp[1], env) / evaluate(exp[2], env)
   when "%"
     evaluate(exp[1], env) % evaluate(exp[2], env)
+  when "=="
+    evaluate(exp[1], env) == evaluate(exp[2], env)
+  when ">"
+    evaluate(exp[1], env) > evaluate(exp[2], env)
+  when "<"
+    evaluate(exp[1], env) < evaluate(exp[2], env)
+  when "!="
+    evaluate(exp[1], env) != evaluate(exp[2], env)
   # ... Implement other operators that you need
 
 
@@ -72,11 +80,17 @@ def evaluate(exp, env)
     #   else
     #     ???
     #   end
-    raise(NotImplementedError) # Problem 3
+    if evaluate(exp[1], env)
+      evaluate(exp[2], env)
+    else
+      evaluate(exp[3], env)
+    end
 
   when "while"
     # Loop.
-    raise(NotImplementedError) # Problem 3
+    while evaluate(exp[1], env)
+      evaluate(exp[2], env)
+    end
 
 
 #
