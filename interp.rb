@@ -59,8 +59,7 @@ def evaluate(exp, env, fun)
     # Variable reference: lookup the value corresponded to the variable
     #
     # Advice: env[???]
-    val = exp[1]
-    env[val]
+    env[exp[1]]
 
   when "var_assign"
     # Variable assignment: store (or overwrite) the value to the environment
@@ -104,7 +103,34 @@ def evaluate(exp, env, fun)
     # Lookup the function definition by the given function name.
     func = fun[exp[1]]
 
-    if func.nil?
+    if func
+      # (You may want to implement "func_def" first.)
+      #
+      # Here, we could find a user-defined function definition.
+      # The variable `func` should be a value that was stored at "func_def":
+      # parameter list and AST of function body.
+      #
+      # Function calls evaluates the AST of function body within a new scope.
+      # You know, you cannot access a varible out of function.
+      # Therefore, you need to create a new environment, and evaluate the
+      # function body under the environment.
+      #
+      # Note, you can access formal parameters (*1) in function body.
+      # So, the new environment must be initialized with each parameter.
+      #
+      # (*1) formal parameter: a variable as found in the function definition.
+      # For example, `a`, `b`, and `c` are the formal parameters of
+      # `def foo(a, b, c)`.
+      formal_args = func[0]
+      func_body = func[1]
+      i = 0
+      func_env = {}
+      while formal_args[i] do
+        func_env[formal_args[i]] = evaluate(exp[i+2], env, fun)
+        i = i + 1
+      end
+      evaluate(func_body, func_env, fun)
+    else
       # We couldn't find a user-defined function definition;
       # it should be a builtin function.
       # Dispatch upon the given function name, and do paticular tasks.
@@ -146,38 +172,6 @@ def evaluate(exp, env, fun)
       else
         raise("unknown builtin function " + exp[1])
       end
-    else
-
-#
-## Problem 5: Function definition
-#
-
-      # (You may want to implement "func_def" first.)
-      #
-      # Here, we could find a user-defined function definition.
-      # The variable `func` should be a value that was stored at "func_def":
-      # parameter list and AST of function body.
-      #
-      # Function calls evaluates the AST of function body within a new scope.
-      # You know, you cannot access a varible out of function.
-      # Therefore, you need to create a new environment, and evaluate the
-      # function body under the environment.
-      #
-      # Note, you can access formal parameters (*1) in function body.
-      # So, the new environment must be initialized with each parameter.
-      #
-      # (*1) formal parameter: a variable as found in the function definition.
-      # For example, `a`, `b`, and `c` are the formal parameters of
-      # `def foo(a, b, c)`.
-      formal_args = func[0]
-      func_body = func[1]
-      i = 0
-      func_env = {}
-      while formal_args[i] do
-        func_env[formal_args[i]] = evaluate(exp[i+2], env, fun)
-        i = i + 1
-      end
-      evaluate(func_body, func_env, fun)
     end
 
   when "func_def"
