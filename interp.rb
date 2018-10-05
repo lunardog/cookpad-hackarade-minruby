@@ -135,7 +135,6 @@ def evaluate(exp, env)
       end
     else
 
-
 #
 ## Problem 5: Function definition
 #
@@ -157,8 +156,22 @@ def evaluate(exp, env)
       # (*1) formal parameter: a variable as found in the function definition.
       # For example, `a`, `b`, and `c` are the formal parameters of
       # `def foo(a, b, c)`.
-      raise(NotImplementedError) # Problem 5
-    end
+      formal_args = func[0]
+      func_body = func[1]
+      args = exp.drop(2)
+      if formal_args.length == args.length
+        func_env = {}
+        count = formal_args.length - 1
+        while count >= 0 do
+          func_env[formal_args[count]] = evaluate(args[count], env)
+          count = count - 1
+        end
+        evaluate(func_body, func_env)
+      else
+        raise("number of parameters is wrong")
+      end
+
+   end
 
   when "func_def"
     # Function definition.
@@ -169,7 +182,8 @@ def evaluate(exp, env)
     # All you need is store them into $function_definitions.
     #
     # Advice: $function_definitions[???] = ???
-    raise(NotImplementedError) # Problem 5
+    #  idea: store a tuple of [args, body]
+    $function_definitions[exp[1]] = [exp[2], exp[3]]
 
 
 #
