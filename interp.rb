@@ -45,11 +45,13 @@ def evaluate(exp, env, fun)
     # Statements: sequential evaluation of one or more expressions.
     #
     i = 1
+    ret = nil
     while exp[i] do
       subexp = exp[i]
-      evaluate(subexp, env, fun)
       i = i + 1
+      ret = evaluate(subexp, env, fun)
     end
+    ret
   # The second argument of this method, `env`, is an "environement" that
   # keeps track of the values stored to variables.
   # It is a Hash object whose key is a variable name and whose value is a
@@ -136,9 +138,7 @@ def evaluate(exp, env, fun)
       # Dispatch upon the given function name, and do paticular tasks.
       case exp[1]
       when "p"
-        # MinRuby's `p` method is implemented by Ruby's `p` method.
         p(evaluate(exp[2], env, fun))
-      # ... Problem 4
       when "pp"
         pp(evaluate(exp[2], env, fun))
       when "raise"
@@ -150,7 +150,7 @@ def evaluate(exp, env, fun)
       when "minruby_load"
         minruby_load()
       when "Integer"
-        evaluate(exp[2], env, fun).to_i
+        Integer(evaluate(exp[2], env, fun))
       when "fizzbuzz"
         n = 1
         while n < 100
