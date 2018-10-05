@@ -45,8 +45,11 @@ def evaluate(exp, env)
   when "stmts"
     # Statements: sequential evaluation of one or more expressions.
     #
-    exp.drop(1).each do |subexp|
+    i = 1
+    while exp[i] do
+      subexp = exp[i]
       evaluate(subexp, env)
+      i = i + 1
     end
   # The second argument of this method, `env`, is an "environement" that
   # keeps track of the values stored to variables.
@@ -131,7 +134,7 @@ def evaluate(exp, env)
           n = n + 1
         end
       else
-        raise("unknown builtin function")
+        raise("unknown builtin function " + exp[1])
       end
     else
 
@@ -158,18 +161,13 @@ def evaluate(exp, env)
       # `def foo(a, b, c)`.
       formal_args = func[0]
       func_body = func[1]
-      args = exp.drop(2)
-      if formal_args.length == args.length
-        func_env = {}
-        count = formal_args.length - 1
-        while count >= 0 do
-          func_env[formal_args[count]] = evaluate(args[count], env)
-          count = count - 1
-        end
-        evaluate(func_body, func_env)
-      else
-        raise("number of parameters is wrong")
+      i = 0
+      func_env = {}
+      while formal_args[i] do
+        func_env[formal_args[i]] = evaluate(exp[i+2], env)
+        i = i + 1
       end
+      evaluate(func_body, func_env)
     end
 
   when "func_def"
@@ -192,8 +190,10 @@ def evaluate(exp, env)
   # You don't need advices anymore, do you?
   when "ary_new"
     arr = []
-    for subexp in exp.drop(1)
-      arr = arr << evaluate(subexp, env)
+    i = 1
+    while exp[i] do
+      arr[i-1] = evaluate(exp[i], env)
+      i = i + 1
     end
     arr
 
@@ -205,10 +205,10 @@ def evaluate(exp, env)
 
   when "hash_new"
     hash = {}
-    count = 1
-    while count < exp.length - 1 do
-      hash[evaluate(exp[count], env)] = evaluate(exp[count+1], env)
-      count += 2
+    i = 1
+    while exp[i] do
+      hash[evaluate(exp[i], env)] = evaluate(exp[i+1], env)
+      i = i + 2
     end
     hash
 
