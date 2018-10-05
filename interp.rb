@@ -4,7 +4,6 @@ require "minruby"
 def evaluate(exp, env)
   # exp: A current node of AST
   # env: An environment (explained later)
-
   case exp[0]
 
 #
@@ -66,6 +65,7 @@ def evaluate(exp, env)
     # Variable assignment: store (or overwrite) the value to the environment
     #
     # Advice: env[???] = ???
+    pp exp
     env[exp[1]] = evaluate(exp[2], env)
 
 
@@ -113,6 +113,16 @@ def evaluate(exp, env)
         # MinRuby's `p` method is implemented by Ruby's `p` method.
         p(evaluate(exp[2], env))
       # ... Problem 4
+      when "pp"
+        pp(evaluate(exp[2], env))
+      when "raise"
+        raise(evaluate(exp[2], env))
+      when "require"
+        require evaluate(exp[2], env)
+      when "minruby_parse"
+        minruby_parse(evaluate(exp[2], env))
+      when "minruby_load"
+        minruby_load()
       when "Integer"
         evaluate(exp[2], env).to_i
       when "fizzbuzz"
@@ -198,10 +208,12 @@ def evaluate(exp, env)
     arr
 
   when "ary_ref"
-    evaluate(exp[1], env)[evaluate(exp[2], env)]
+    ary = evaluate(exp[1], env)
+    ary[evaluate(exp[2], env)]
 
   when "ary_assign"
-    evaluate(exp[1], env)[evaluate(exp[2], env)] = evaluate(exp[3], env)
+    ary = evaluate(exp[1], env)
+    ary[evaluate(exp[2], env)] = evaluate(exp[3], env)
 
   when "hash_new"
     hash = {}
