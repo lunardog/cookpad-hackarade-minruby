@@ -204,7 +204,13 @@ def evaluate(exp, env)
     evaluate(exp[1], env)[evaluate(exp[2], env)] = evaluate(exp[3], env)
 
   when "hash_new"
-    raise(NotImplementedError) # Problem 6
+    hash = {}
+    count = 1
+    while count < exp.length - 1 do
+      hash[evaluate(exp[count], env)] = evaluate(exp[count+1], env)
+      count += 2
+    end
+    hash
 
   else
     p("error")
